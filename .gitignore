@@ -1,0 +1,8 @@
+/source/common/SourcePath.cpp
+/.vs
+/out
+/build
+.DS_Store
+*~
+*.swo
+*.swp
