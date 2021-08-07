@@ -69,6 +69,27 @@ namespace GLState {
 
 /* -------------------------------------------------------------------------- */
 /* ----------------------  Write Image to Disk  ----------------------------- */
+#ifdef _WIN32
+static
+unsigned lodepng_encode_wfopen(const char* filename, const unsigned char* Src,
+  unsigned int Width, unsigned int Height,
+  LodePNGColorType color_type, unsigned bitdepth)
+{
+  std::vector<unsigned char> memory;
+  unsigned int error = lodepng::encode(memory, Src, Width, Height, color_type, bitdepth);
+  if (!error) {
+    std::wstring wcfn;
+    if (u8names_towc(filename, wcfn) != 0)
+      return NULL;
+    FILE* file = _wfopen(wcfn.c_str(), L"wb");
+    if(!file) return 79;
+    fwrite(memory.data(), 1, memory.size(), file);
+    fclose(file);
+  }
+  return error;
+}
+#endif //_WIN32
+
 bool write_image(const char* filename, const unsigned char *Src,
                  int Width, int Height, int channels){
   unsigned bitdepth = 8;
@@ -85,9 +106,15 @@ bool write_image(const char* filename, const unsigned char *Src,
     default:
     color_type = LCT_RGBA;break;
   }
+#ifdef _WIN32
+  result = lodepng_encode_wfopen(filename, Src,
+    static_cast<unsigned int>(Width), static_cast<unsigned int>(Height),
+    color_type, bitdepth);
+#else
   result = lodepng_encode_file(filename, Src,
     static_cast<unsigned int>(Width), static_cast<unsigned int>(Height),
     color_type, bitdepth);
+#endif //_WIN32
   if (result == 0)
     std::cerr << "finished writing "<<filename<<"."<<std::endl;
   else

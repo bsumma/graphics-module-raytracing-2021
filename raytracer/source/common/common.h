@@ -75,6 +75,9 @@ namespace Angel {
 
 #include "vec.h"
 #include "mat.h"
+#ifdef _WIN32
+#include "u8names.h"
+#endif //_WIN32
 
 static void __gluMultMatrixVecd(const GLdouble matrix[16], const GLdouble in[4],
                                 GLdouble out[4])
@@ -237,7 +240,14 @@ _gluUnProject(GLdouble winx, GLdouble winy, GLdouble winz,
 static char*
 readShaderSource(const char* shaderFile)
 {
+#ifdef _WIN32
+  std::wstring wcfn;
+  if (u8names_towc(shaderFile, wcfn) != 0)
+    return NULL;
+  FILE* fp = _wfopen(wcfn.c_str(), L"rb");
+#else
   FILE* fp = fopen(shaderFile, "rb");
+#endif //_WIN32
   
   if ( fp == NULL ) { return NULL; }
   
