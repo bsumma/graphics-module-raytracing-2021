@@ -24,8 +24,11 @@ struct vec2 {
     //
     //  --- Constructors and Destructors ---
     //
+    
+    vec2( ) :
+	x(GLfloat(0.0)), y(GLfloat(0.0)) {}
 
-    vec2( GLfloat s = GLfloat(0.0) ) :
+    explicit vec2( GLfloat s ) :
 	x(s), y(s) {}
 
     vec2( GLfloat x, GLfloat y ) :
@@ -164,7 +167,10 @@ struct vec3 {
     //  --- Constructors and Destructors ---
     //
 
-    vec3( GLfloat s = GLfloat(0.0) ) :
+    vec3() :
+    x(GLfloat(0.0)), y(GLfloat(0.0)), z(GLfloat(0.0)) {}
+
+    explicit vec3( GLfloat s ) :
 	x(s), y(s), z(s) {}
 
     vec3( GLfloat x, GLfloat y, GLfloat z ) :
@@ -295,7 +301,7 @@ vec3 cross(const vec3& a, const vec3& b )
 		 a.z * b.x - a.x * b.z,
 		 a.x * b.y - a.y * b.x );
 }
-  
+
 inline
 vec3 reflect( const vec3& I, const vec3& N ) {
     return I - 2.0 * dot(N, I) * N;
@@ -320,7 +326,10 @@ struct vec4 {
     //  --- Constructors and Destructors ---
     //
 
-    vec4( GLfloat s = GLfloat(0.0) ) :
+    vec4(  ) :
+	x(GLfloat(0.0)), y(GLfloat(0.0)), z(GLfloat(0.0)), w(GLfloat(0.0)) {}
+
+    explicit vec4( GLfloat s ) :
 	x(s), y(s), z(s), w(s) {}
 
     vec4( GLfloat x, GLfloat y, GLfloat z, GLfloat w ) :
@@ -456,7 +465,7 @@ vec3 cross(const vec4& a, const vec4& b )
 		 a.z * b.x - a.x * b.z,
 		 a.x * b.y - a.y * b.x );
 }
-  
+
 inline
 vec4 reflect( const vec4& I, const vec4& N ) {
     return I - 2.0 * dot(N, I) * N;

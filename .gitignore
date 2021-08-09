@@ -2,6 +2,10 @@
 /.vs
 /out
 /build
+/raytracer/source/common/SourcePath.cpp
+/raytracer/.vs
+/raytracer/out
+/raytracer/build
 .DS_Store
 *~
 *.swo

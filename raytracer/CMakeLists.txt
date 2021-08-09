@@ -39,6 +39,8 @@ add_executable(raytracer WIN32 MACOSX_BUNDLE
 	source/common/vec.h
 	source/common/lodepng.h
 	source/common/lodepng.cpp
+	source/common/u8names.h
+	source/common/u8names.cpp
 	shaders/fshader.glsl
     shaders/vshader.glsl)
 

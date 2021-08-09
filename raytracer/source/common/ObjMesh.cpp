@@ -14,8 +14,15 @@ bool Mesh::loadOBJ(const char * path){
   std::vector< vec3 > temp_normals;
   
   hasUV = true;
-  
+#ifdef _WIN32
+  std::wstring wcfn;
+  if (u8names_towc(path, wcfn) != 0)
+    return NULL;
+  FILE * file = _wfopen(wcfn.c_str(), L"r");
+#else
   FILE * file = fopen(path, "r");
+#endif //_WIN32
+
   if( file == NULL ){
     printf("Impossible to open the file !\n");
     return false;
