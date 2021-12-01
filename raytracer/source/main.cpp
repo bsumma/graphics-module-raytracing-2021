@@ -192,9 +192,7 @@ void castRayDebug(vec4 p0, vec4 dir){
       std::cout << "Hit " << intersections[i].name << " " << intersections[i].ID_ << "\n";
       std::cout << "P: " <<  intersections[i].P_w << "\n";
       std::cout << "N: " <<  intersections[i].N_w << "\n";
-      vec4 L = lightPosition-intersections[i].P_w;
-      L  = normalize(L);
-      std::cout << "L: " << L << "\n";
+      std::cout << "t_w: " << intersections[i].t_w << "\n";
     }
   }
   
@@ -237,6 +235,10 @@ void rayTrace(){
       int idx = j*GLState::window_width+i;
       std::vector < vec4 > ray_o_dir = findRay(i,j);
       vec4 color = castRay(ray_o_dir[0], vec4(ray_o_dir[1].x, ray_o_dir[1].y, ray_o_dir[1].z,0.0), NULL, 0);
+      color.x = fmin(1.0, color.x);
+      color.y = fmin(1.0, color.y);
+      color.z = fmin(1.0, color.z);
+      color.w = fmin(1.0, color.w);
       buffer[4*idx]   = color.x*255;
       buffer[4*idx+1] = color.y*255;
       buffer[4*idx+2] = color.z*255;
