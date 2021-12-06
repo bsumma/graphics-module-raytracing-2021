@@ -199,7 +199,7 @@ void castRayDebug(vec4 p0, vec4 dir){
 }
 
 /* -------------------------------------------------------------------------- */
-bool shadowFeeler(vec4 p0, vec4 Light){
+bool shadowFeeler(vec4 p0, vec4 L, double distance){
   bool inShadow = false;
   
   //TODO: Shadow code here
