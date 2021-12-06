@@ -199,7 +199,7 @@ void castRayDebug(vec4 p0, vec4 dir){
 }
 
 /* -------------------------------------------------------------------------- */
-bool shadowFeeler(vec4 p0, Object *object){
+bool shadowFeeler(vec4 p0, vec4 Light){
   bool inShadow = false;
   
   //TODO: Shadow code here
@@ -239,7 +239,7 @@ vec4 castRay(vec4 p0, vec4 dir, Object *lastHitObject, int depth){
   //I hit something
   Object::IntersectionValues intData = intersections[0];
   Object * hitObject = sceneObjects[intData.ID_];
-      
+  
   //Phong Shade (simplified, not doing diffuse product, not ambient, etc.)
   vec4 L = lightPosition-intData.P_w;
   double light_distance = length(L);
