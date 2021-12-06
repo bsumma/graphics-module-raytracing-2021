@@ -52,8 +52,20 @@ Object::IntersectionValues Sphere::intersect(vec4 p0_w, vec4 V_w){
 /* ------ Ray = p0 + t*V  sphere at origin O and radius r    : Find t ------- */
 double Sphere::raySphereIntersection(vec4 p0, vec4 V, vec4 O, double r){
   double t   = std::numeric_limits< double >::infinity();
-  //TODO: Ray-sphere intersection;
-  return t;
+  double a   = 1.0;
+  double b   = dot(2*V, p0-O);
+  double c   = (length(p0-O)*length(p0-O)) - (r*r);
+  
+  double temp = b*b - (4*a*c);
+  if(temp < 0.0){ return t;}
+  
+  double t1 = (-b+sqrt(temp))/(2*a);
+  double t2 = (-b-sqrt(temp))/(2*a);
+  
+  if(t1 < EPSILON){ t1 =  std::numeric_limits< double >::infinity(); }
+  if(t2 < EPSILON){ t2 =  std::numeric_limits< double >::infinity(); }
+  
+  return (t1 < t2)? t1 : t2;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -99,7 +111,18 @@ Object::IntersectionValues Square::intersect(vec4 p0_w, vec4 V_w){
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 double Square::raySquareIntersection(vec4 p0, vec4 V){
-  double t   = std::numeric_limits< double >::infinity();
-  //TODO: Ray-square intersection;
-  return t;
+  vec4 N = vec4(0.0,0.0,1.0, 0.0);
+  double t = dot(N, vec4(0.0,0.0,0.0,1.0)-p0)/dot(N, V);
+  vec4 temp = p0+t*V;
+  
+  if(t < EPSILON){ return std::numeric_limits< double >::infinity();}
+  
+  bool inside_x = (temp.x < (1.0+EPSILON) && temp.x > (-1.0-EPSILON));
+  bool inside_y = (temp.y < (1.0+EPSILON) && temp.y > (-1.0-EPSILON));
+  
+  if(inside_x && inside_y){
+    return t;
+  }else{
+    return std::numeric_limits< double >::infinity();
+  }
 }

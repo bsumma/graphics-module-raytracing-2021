@@ -207,6 +207,13 @@ bool shadowFeeler(vec4 p0, Object *object){
   return inShadow;
 }
 
+
+/* -------------------------------------------------------------------------- */
+void fresnelCoefficients(vec4 E, vec4 T, vec4 N, double n1, double n2,
+                         double& reflected, double&refracted){
+  
+}
+
 /* -------------------------------------------------------------------------- */
 /* ----------  cast Ray = p0 + t*dir and intersect with sphere      --------- */
 /* ----------  return color, right now shading is approx based      --------- */
@@ -216,10 +223,47 @@ vec4 castRay(vec4 p0, vec4 dir, Object *lastHitObject, int depth){
   
   if(depth > maxDepth){ return color; }
   
-  //TODO: Raytracing code here
+  //Compute Intersections for all objects
+  std::vector < Object::IntersectionValues > intersections;
+  for(unsigned int i=0; i < sceneObjects.size(); i++){
+    intersections.push_back(sceneObjects[i]->intersect(p0, dir));
+    intersections[intersections.size()-1].ID_ = i;
+  }
+  std::sort(intersections.begin(), intersections.end(), intersectionSort);
+
+  if(intersections[0].t_w == std::numeric_limits< double >::infinity()){
+    //No hit, return background
+    return vec4(0.8, 0.8, 1.0, 1.0 );
+  }
   
+  //I hit something
+  Object::IntersectionValues intData = intersections[0];
+  Object * hitObject = sceneObjects[intData.ID_];
+      
+  //Phong Shade (simplified, not doing diffuse product, not ambient, etc.)
+  vec4 L = lightPosition-intData.P_w;
+  double light_distance = length(L);
+  L = normalize(L);
+  double diffuseValue = fmax( dot(intData.N_w, L), 0.0 );
+  
+  vec4 diffuse_color = diffuseValue*lightColor*hitObject->shadingValues.color;
+  
+  vec4 R = normalize(reflect(L, intData.N_w));
+  double specularValue =  hitObject->shadingValues.Ks *                     pow(fmax(dot(R,dir),0.0),hitObject->shadingValues.Kn);
+  
+  color += hitObject->shadingValues.Kd*diffuse_color + lightColor*specularValue;
+  
+  
+  
+    
   return color;
   
+}
+
+float clamp(float in){
+  if(in > 1.0){ return 1.0;}
+  if(in < 0.0){ return 0.0;}
+  return in;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -235,10 +279,11 @@ void rayTrace(){
       int idx = j*GLState::window_width+i;
       std::vector < vec4 > ray_o_dir = findRay(i,j);
       vec4 color = castRay(ray_o_dir[0], vec4(ray_o_dir[1].x, ray_o_dir[1].y, ray_o_dir[1].z,0.0), NULL, 0);
-      color.x = fmin(1.0, color.x);
-      color.y = fmin(1.0, color.y);
-      color.z = fmin(1.0, color.z);
-      color.w = fmin(1.0, color.w);
+      
+      color.x = clamp(color.x);
+      color.y = clamp(color.y);
+      color.z = clamp(color.z);
+      color.w = 1.0;
       buffer[4*idx]   = color.x*255;
       buffer[4*idx+1] = color.y*255;
       buffer[4*idx+2] = color.z*255;
@@ -246,7 +291,9 @@ void rayTrace(){
     }
   }
   
-  write_image("output.png", buffer, GLState::window_width, GLState::window_height, 4);
+  std::string name = source_path + "/output.png";
+  
+  write_image(name.c_str(), buffer, GLState::window_width, GLState::window_height, 4);
   
   delete[] buffer;
 }
